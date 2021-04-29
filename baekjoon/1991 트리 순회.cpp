@@ -1,123 +1,68 @@
 #include <iostream>
-
-typedef struct _Node {
-
-    char data;
-    struct _Node *llink;
-    struct _Node *rlink;
-
-} Node;
-
-
-void insertNode(Node* head, char parent, char ldata, char rdata);
-void parentNode(Node* head, Node** temp, char parent);
-void inorderTraversal(Node* ptr);
-void preorderTraversal(Node* ptr);
-void postorderTraversal(Node* ptr);
+#include <map>
 
 using namespace std;
 
-int main (void)
+map<char, pair<char, char>> tree;
+
+void preorder(char node);
+void inorder(char node);
+void postorder(char node);
+
+int main(void)
 {
     cin.tie(NULL);
     ios::sync_with_stdio(false);
     cout.tie(NULL);
 
-    Node* head = new Node;
-    head->data = 'A';
-    head->llink = NULL;
-    head->rlink = NULL;
-    
-
-    char parent, ldata, rdata;
+    char parent, left, right;
     int N;
 
     cin >> N;
     for (int i = 0; i < N; i++)
     {
-        cin >> parent >> ldata >> rdata;
-
-        // leaf 노드가 아닐 경우
-        if (ldata != '.' || rdata != '.')
-            insertNode(head, parent, ldata, rdata);
+        cin >> parent >> left >> right;
+        tree[parent] = make_pair(left, right);
     }
 
-    preorderTraversal(head);
+    preorder('A');
     cout << '\n';
 
-    inorderTraversal(head);
+    inorder('A');
     cout << '\n';
 
-    postorderTraversal(head);
-
-    return 0;
+    postorder('A');
 }
 
-void insertNode(Node* head, char parent, char ldata, char rdata)
+void preorder(char node)
 {
-    Node *searchNode = NULL;
-    parentNode(head, &searchNode, parent);
+    cout << node;
+
+    if (tree[node].first != '.')
+        preorder(tree[node].first);
     
-    if (ldata != '.')
-    {
-        Node *newLNode = new Node;
+    if (tree[node].second != '.')
+        preorder(tree[node].second);
+}
 
-        newLNode->data = ldata;
-        newLNode->llink = NULL;
-        newLNode->rlink = NULL;
-
-        searchNode->llink = newLNode;
-    }
+void inorder(char node)
+{
+    if (tree[node].first != '.')
+        inorder(tree[node].first);
     
-    if (rdata != '.')
-    {
-        Node *newRNode = new Node;
+    cout << node;
 
-        newRNode->data = rdata;
-        newRNode->llink = NULL;
-        newRNode->rlink = NULL;
-
-        searchNode->rlink = newRNode;
-    }
+    if (tree[node].second != '.')
+        inorder(tree[node].second);
 }
 
-void parentNode(Node* searchNode, Node** temp, char parent)
+void postorder(char node)
 {
-    if (searchNode != NULL && *temp == NULL)
-    {
-        if (searchNode->data == parent) *temp = searchNode;
+    if (tree[node].first != '.')
+        postorder(tree[node].first);
+    
+    if (tree[node].second != '.')
+        postorder(tree[node].second);
 
-        parentNode(searchNode->llink, temp, parent);
-        parentNode(searchNode->rlink, temp, parent);
-    }
-}
-
-void inorderTraversal(Node* ptr)
-{
-    if (ptr != NULL)
-    {
-        inorderTraversal(ptr->llink);
-        cout << ptr->data;
-        inorderTraversal(ptr->rlink);
-    }
-}
-
-void preorderTraversal(Node* ptr)
-{
-    if (ptr != NULL)
-    {
-        cout << ptr->data;
-        preorderTraversal(ptr->llink);
-        preorderTraversal(ptr->rlink);
-    }
-}
-
-void postorderTraversal(Node* ptr)
-{
-    if (ptr != NULL)
-    {
-        postorderTraversal(ptr->llink);
-        postorderTraversal(ptr->rlink);
-        cout << ptr->data;
-    }
+    cout << node;
 }
