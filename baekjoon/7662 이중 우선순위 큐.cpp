@@ -1,19 +1,17 @@
 /*
-¹éÁØ 7662¹ø ÀÌÁß ¿ì¼±¼øÀ§ Å¥   || °ñµå 5
-https://www.acmicpc.net/problem/7662
-
-(Ã³À½¿¡´Â ¿ì¼±¼øÀ§ Å¥¸¦ MAX HEAP, MIN HEAP µÎ°³¸¦ ¼±¾ğÇØ¼­ »ç¿ëÇßÀ¸³ª)
-(Áß°£¿¡ »èÁ¦°¡ ÀÏ¾î³ª°í, ´Ù½Ã »ğÀÔÀÌ ÀÏ¾î³¯ ¶§¸¦ »ı°¢ÇÏÁö ¸øÇØ¼­ Æ²¸²)
+ë°±ì¤€ 7662 ì´ì¤‘ ìš°ì„ ìˆœìœ„ í || ê³¨ë“œ 5
+https://www.acmicpc.net/problem/17626
 
 
-±× ÈÄ, ¾î¶² ÀÚ·á±¸Á¶¸¦ »ç¿ëÇØ¾ßÇÒ Áö ¸ô¶ó¼­ ÀÎÅÍ³İ °Ë»öÀ» ÅëÇØ ¾Ë°ÔµÇ¾úÀ½
-  Áßº¹°ªÀÌ Çã¿ëÀÌ µÇ´Â multisetÀ» ÀÌ¿ëÇÏ¿´°í, 
-  ÃÖ´ñ°ª »èÁ¦´Â --Se.end()
-  ÃÖ¼Ú°ª »èÁ¦´Â Se.begin()
 
-½ÃÀÛ ½Ã°£: 2:50
-Á¾·á ½Ã°£: 4:15  ||  ÃÑ ½Ãµµ È½¼ö : 2È¸, °É¸° ½Ã°£ 1½Ã°£ 25ºĞ
+
+
+
+ì‹œì‘ì‹œê°„ : 3:20
+ì¢…ë£Œì‹œê°„ : 
 */
+
+
 
 #include <iostream>
 #include <set>
@@ -26,67 +24,56 @@ int main(void)
     ios::sync_with_stdio(false);
     cout.tie(NULL);
 
-    int T, k;    char oper;   long long int n;
-    cin >> T;
 
-    for (int i = 0; i < T; i++)
+    multiset<long long int> ms;
+    long long int temp;
+    char command;
+    int t, k;     
+
+    cin >> t;
+    for (int i = 0; i < t; i++)
     {
-        multiset<long long int> Se;
-        cin >> k;
+        ms.clear();
 
+        cin >> k;
         for (int j = 0; j < k; j++)
         {
-            cin >> oper >> n;
-            
-            if (oper == 'I')
-                Se.insert(n);
+            cin >> command >> temp;
 
-            else if (Se.size() != 0)
+            if (command == 'I')
+                ms.insert(temp);
+
+            else
             {
-                if (n == 1) // max »èÁ¦
-                    Se.erase(--Se.end());
+                if (ms.size() == 0)
+                    continue;
+
+                if (temp == -1)
+                    ms.erase(ms.begin());
 
                 else
-                    Se.erase(Se.begin());
+                    ms.erase(--ms.end());
             }
         }
 
-        if (Se.size() == 0)
+        if (ms.size() == 0)
             cout << "EMPTY\n";
-
         else
-        {
-            cout << *(--Se.end()) << " ";
-            cout << *(Se.begin()) << "\n";
-        }
+            cout << *(--ms.end()) << " " << *ms.begin() << "\n";
     }
+
+    // ms.insert(2);
+    // ms.insert(2);
+    // ms.insert(4);
+    // ms.insert(3);
+    // ms.insert(7);
+
+    // ms.erase(ms.begin());
+    // ms.erase(--ms.end());
+    // cout << *ms.begin() << " " << *(--ms.end()) << "\n";
+
+    // for (auto& i : ms)
+    //     cout << i << "\n";
 
     return 0;
 }
-
-
-/*
-for (int i = 0; i < 5; i++)
-    {
-        pq_MAX.push(i);
-        pq_MIN.push(i);
-    }
-
-    for (int i = 0; i < 5; i++)
-    {
-        cout << pq_MAX.top() << " ";
-        pq_MAX.pop();
-    }
-
-    cout << endl;
-    
-    for (int i = 0; i < 5; i++)
-    {
-        priority_queue<int, vector<int>, greater<int>> pq_MIN;
-        if (pq_MIN.empty())
-            cout << "empty!" << " ";
-        else
-            cout << pq_MIN.top() << " ";
-        pq_MIN.pop();
-    }
-*/
