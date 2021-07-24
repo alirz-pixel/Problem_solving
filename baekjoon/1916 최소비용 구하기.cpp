@@ -61,21 +61,22 @@ void dijkstra(vector<vector<pii>>& graph, int start, int end, int num)
     pq.push({0, start});
     dist[start] = 0;
 
-    int vertex;
-    while(!pq.empty())
+    int vertex, cost;
+    while(!pq.top().second != end)
     {   
+        cost = -pq.top().first;
         vertex = pq.top().second;
         pq.pop();
 
-        if (visited[vertex]) continue;
-        visited[vertex] = true;
+        if (dist[vertex] < cost) continue;
 
-        for (int i = 0; i < graph[vertex].size(); i++)
+        for (pii v : graph[vertex])
         {
-            if (dist[graph[vertex][i].first] > dist[vertex] + graph[vertex][i].second)
+            int temp = dist[vertex] + v.second;
+            if (dist[v.first] > temp)
             {
-                dist[graph[vertex][i].first] = dist[vertex] + graph[vertex][i].second;
-                pq.push({-dist[graph[vertex][i].first], graph[vertex][i].first});
+                dist[v.first] = temp;
+                pq.push({-temp, v.first});
             }
         }
     }
