@@ -25,6 +25,15 @@ https://www.acmicpc.net/problem/1238
 인접 행렬의 경우, dist[vertex]를 판단하기 위해선
 정점의 수만큼 반복해야 하는데 이것이 시간 초과가 나게 한 원인인 것 같다.
 
+------------------------------------------------
+재재 풀이 다익스트라 도전 (시간복잡도 개선)
+
+다익스트라가 한 정점에서 모든 정점으로의 최단경로 알고리즘을 잊고 있어서 그런지
+다익스트라를 무의미하게 여러번 돌렸던 점을 개선하였다.
+
+==> x에서 각각 학생의 집으로 갈 떄, 다익스트라를 한 번만 사용해도 됨
+
+
 시작 시간 : 5:03
 종료 시간 : 5:23
 */
@@ -38,7 +47,7 @@ https://www.acmicpc.net/problem/1238
 
 using namespace std;
 
-int dijkstra(const vector<vector<pair<int, int>>>& graph, int start, int end, int num);
+int dijkstra(const vector<vector<pair<int, int>>>& graph, int start, int end, int num, vector<int> &result);
 int main(void)
 {
     cin.tie(NULL);
@@ -57,16 +66,17 @@ int main(void)
         graph[v1].push_back({cost, v2});
     }
 
-    int result, max = 0;
+    int max = 0;
+    vector<int> result(n + 1);
+    dijkstra(graph, x, -1, n, result);
     for (int i = 1; i <= n; i++)
     {
         if (i == x) continue;
 
-        result = dijkstra(graph, i, x, n);
-        result += dijkstra(graph, x, i, n);
+        result[i] = dijkstra(graph, i, x, n, result) + result[i];
 
-        if (max < result)
-            max = result;
+        if (max < result[i] && result[i] < INF)
+            max = result[i];
     }
 
     cout << max;
@@ -75,7 +85,7 @@ int main(void)
 }
 
 
-int dijkstra(const vector<vector<pair<int, int>>>& graph, int start, int end, int num)
+int dijkstra(const vector<vector<pair<int, int>>>& graph, int start, int end, int num, vector<int> &result)
 {
     vector<bool> visited(num + 1, false);
     vector<int> dist(num + 1, INF);
@@ -104,6 +114,14 @@ int dijkstra(const vector<vector<pair<int, int>>>& graph, int start, int end, in
                 pq.push({-dist[nextv], nextv});
             }
         }
+    }
+
+    if (end == -1)
+    {
+        for (int i = 1; i <= num; i++)
+            result[i] = dist[i];
+
+        return -1;
     }
 
     return dist[end];
