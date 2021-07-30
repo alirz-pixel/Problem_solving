@@ -33,9 +33,27 @@ https://www.acmicpc.net/problem/1238
 
 ==> x에서 각각 학생의 집으로 갈 떄, 다익스트라를 한 번만 사용해도 됨
 
+-------------------------------------------------
+재재재 풀이 다익스트라 도전 (시간복자도 개선+)
 
-시작 시간 : 5:03
-종료 시간 : 5:23
+위의 말대로 다익스트라는 한 정점에서 모든 정점으로의 최단경로 알고리즘이기 때문에
+각 학생들의 집에서 x로 가는 것 또한 다익스트라 한 번으로 구할 수 있다.
+
+여기에서 주의할 점이 하나 생기는데, 각 학생들의 집에서 x로 갈 떄에는 '역방향 그래프'를 사용해야 한다는 점이다.
+
+
+그 이유는 이전 풀이에서 알 수 있는데
+원래 각 학생들의 집에서 x로 가는 최단경로를 구할 떄에는 
+1 -> x, 2 -> x, 3 -> x
+이런 식으로 다익스트라를 여러번 사용해야 한다.
+
+하지만 역방향 그래프를 이용하게 된다면
+1 <- x, 2 <- x, 3 <- x
+이런 식으로 변하게 되기 때문에 한번의 다익스트라 사용으로 각 학생들의 집에서 x로 갈 수 있게 되는 것이다.
+
+
+시작 시간 : *:** (재풀이이기 때문에 무의미)
+종료 시간 : *:** (재풀이이기 때문에 무의미)
 */
 
 
@@ -58,26 +76,23 @@ int main(void)
     int n, m, x, v1, v2, cost;
     cin >> n >> m >> x;
 
-    vector<vector<pair<int, int>>> graph(n + 1);
+    vector<vector<pair<int, int>>> graph(n + 1), reverse_graph(n + 1);
     for (int i = 0; i < m; i++)
     {
         cin >> v1 >> v2 >> cost;
 
         graph[v1].push_back({cost, v2});
+        reverse_graph[v2].push_back({cost, v1});
     }
 
     int max = 0;
-    vector<int> result(n + 1);
+    vector<int> result(n + 1), Rresult(n + 1);
     dijkstra(graph, x, -1, n, result);
+    dijkstra(reverse_graph, x, -1, n, Rresult);
+    
     for (int i = 1; i <= n; i++)
-    {
-        if (i == x) continue;
-
-        result[i] = dijkstra(graph, i, x, n, result) + result[i];
-
-        if (max < result[i] && result[i] < INF)
-            max = result[i];
-    }
+        if (max < result[i] + Rresult[i])
+            max = result[i] + Rresult[i];
 
     cout << max;
 
