@@ -17,6 +17,11 @@ https://www.acmicpc.net/problem/13977
 cnt에 1을 더해주고 다음 순회부터는 이 사람의 면접 순위를 기준으로 탐색한다.
 
 
+재풀이 :
+문제의 입력엔 '동석차'가 없기 때문에
+서류 심사의 순위가 높은 순으로 정렬을 할 필요가 없다. 
+(이것이 시간을 50ms나 줄이는 키포인트)
+
 
 시작 시간 8:21
 종료 시간 8:43   총 시도횟수 : 1회  ||  걸린시간 : 22분
@@ -35,13 +40,13 @@ int main(void)
     cout.tie(NULL);
 
 
-    int arr[100001];
     int t, n, input1, input2, min, cnt;
     cin >> t;
     
     for (int i = 0; i < t; i++)
     {
         cin >> n;
+        vector<int> arr(n + 1);
 
         for (int j = 0; j < n; j++)
         {
