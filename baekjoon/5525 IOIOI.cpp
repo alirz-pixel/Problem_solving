@@ -1,69 +1,77 @@
+/*
+백준 5525 IOIOI || 실버2
+https://www.acmicpc.net/problem/5525
+
+
+KMP 알고리즘을 겨우 학습한 후,
+이걸 처음으로(예전에 풀었으나 기억이 없음)
+시도해보는 문제임
+
+시작시간 9:00
+종료시간 9:14     걸린 시간 : 14분  ||  시도횟수 : 1회
+*/
+
+
+
 #include <iostream>
 #include <vector>
+#include <string>
 
 using namespace std;
 
-vector<int> makeTable (string pattern, int patternSize);
-void KMP (string parent, string pattern, int parentSize, int patternSize);
-
+void make_table(vector<int>& p, const string& pattern);
 int main(void)
 {
-    int N, M;
-    string pattern = "";
-    string S;
+    cin.tie(0);
+    ios::sync_with_stdio(false);
+    cout.tie(0);
 
-    cin >> N >> M;
-    cin >> S;
+    string input, pattern = "IOI";
+    int n, m, result = 0;
+    cin >> n >> m;
+    cin >> input;
 
-    for (int i = 0; i < N; i++)
-        pattern += "IO";
-    pattern += "I";
 
-    KMP(S, pattern, M, N*2+1);
+    for (int i = 1; i < n; i++)
+        pattern += "OI";
 
-    return 0;
-}
+    vector<int> p(pattern.size(), 0);
+    make_table(p, pattern);
 
-vector<int> makeTable (string pattern, int patternSize)
-{
-    vector<int> table(patternSize, 0);
     int j = 0;
-
-    for (int i = 1; i < patternSize; i++)
+    for (int i = 0; i < input.size(); i++)
     {
-        while (j > 0 && pattern[i] != pattern[j])
-            j = table[j - 1];
+        while (j > 0 && input[i] != pattern[j])
+            j = p[j - 1];
 
-        if (pattern[i] == pattern[j])
-            table[i] = ++j;
-    }
-
-    return table;
-}
-
-void KMP (string parent, string pattern, int parentSize, int patternSize)
-{
-    vector<int> table = makeTable(pattern, patternSize);
-
-    int cnt = 0;
-    int j = 0;
-    for (int i = 0; i < parentSize; i++)
-    {
-        while (j > 0 && parent[i] != pattern[j])
-            j = table[j - 1];
-
-        if (parent[i] == pattern[j])
+        if (input[i] == pattern[j])
         {
-            if (j == patternSize - 1)
+            if (j == pattern.size() - 1)
             {
-                cnt++;
-                j = table[j];
+                result++;
+                j = p[j];
             }
-
             else
                 j++;
         }
     }
 
-    cout << cnt;
+    cout << result;
+
+    return 0;
+}
+
+
+void make_table(vector<int>& p, const string& pattern)
+{
+    int j = 0;
+
+    for (int i = 1; i < pattern.size(); i++)
+    {
+        while (j > 0 && pattern[i] != pattern[j])
+            j = p[j - 1];
+        
+        if (pattern[i] == pattern[j])
+            p[i] = ++j;
+    }
 }
