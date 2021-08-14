@@ -1,22 +1,39 @@
-#include <iostream>
+/*
+백준 1260번 DFS와 BFS || 실버2
+https://www.acmicpc.net/problem/1260
+
+
+
+
+
+
+시작시간 12:10
+종료시간 12:40
+*/
+
+
 #include <algorithm>
+#include <iostream>
 #include <vector>
 #include <stack>
 #include <queue>
 
 using namespace std;
 
-void dfs(vector<vector<int>>& graph, int startV, int maxVertex);
-void bfs(vector<vector<int>>& graph, int startV, int maxVertex);
-
+void DFS(vector<vector<int>>& graph, int start, int num);
+void BFS(vector<vector<int>>& graph, int start, int num);
 int main(void)
 {
-    int v1, v2;
-    int N, M, V;
-    cin >> N >> M >> V;
+    cin.tie(0);
+    ios::sync_with_stdio(false);
+    cout.tie(0);
 
-    vector<vector<int>> graph(N + 1);
-    for (int i = 0; i < M; i++)
+
+    int n, m, v, v1, v2;
+    cin >> n >> m >> v;
+
+    vector<vector<int>> graph(n + 1);
+    for (int i = 0; i < m; i++)
     {
         cin >> v1 >> v2;
 
@@ -24,55 +41,69 @@ int main(void)
         graph[v2].push_back(v1);
     }
 
-    dfs(graph, V, N + 1);
-    bfs(graph, V, N + 1);
-}
+    for (int i = 1; i <= n; i++)
+        sort(graph[i].begin(), graph[i].end());
 
-void dfs(vector<vector<int>>& graph, int startV, int maxVertex)
-{
-    int top = 0;
+    DFS(graph, v, n);
 
-    vector<bool> visited(maxVertex);
-    stack<int> s;
-    s.push(startV);
-
-    while (!s.empty())
-    {
-        top = s.top();
-        s.pop();
-
-        if (visited[top]) continue;
-
-        cout << top << " ";
-        visited[top] = true;
-
-        sort(graph[top].begin(), graph[top].end(), greater<int>());
-        for (int i = 0; i < graph[top].size(); i++)
-            if (!visited[graph[top][i]]) s.push(graph[top][i]);
-    }
     cout << "\n";
+    BFS(graph, v, n);
+
+    return 0;
 }
 
-void bfs(vector<vector<int>>& graph, int startV, int maxVertex)
+
+void DFS(vector<vector<int>>& graph, int start, int num)
 {
-    int front = 0;
+    vector<bool> v(num + 1);
+    stack<int> st;
 
-    vector<bool> visited(maxVertex);
+    v[start] = true;
+    st.push(start);
+    cout << start << " ";
+
+    int top;
+    while(!st.empty())
+    {
+        int top = st.top();
+        int i;
+
+        for (i = 0; i < graph[top].size(); i++)
+            if (!v[graph[top][i]])
+            {
+                st.push(graph[top][i]);
+                v[graph[top][i]] = true;
+                cout << graph[top][i] << " ";
+
+                break;
+            }
+
+        if (i == graph[top].size())
+            st.pop();
+    }
+}
+
+
+void BFS(vector<vector<int>>& graph, int start, int num)
+{
+    vector<bool> v(num + 1);
     queue<int> q;
-    q.push(startV);
 
-    while (!q.empty())
+    q.push(start);
+    v[start] = true;
+
+    int front;
+    while(!q.empty())
     {
         front = q.front();
+        cout << front << " ";
         q.pop();
 
-        if (visited[front]) continue;
-
-        cout << front << " ";
-        visited[front] = true;
-
-        sort(graph[front].begin(), graph[front].end());
         for (int i = 0; i < graph[front].size(); i++)
-            if (!visited[graph[front][i]]) q.push(graph[front][i]);
+            if (!v[graph[front][i]])
+            {
+                q.push(graph[front][i]);
+                v[graph[front][i]] = true;
+            }
     }
-}
+}       
