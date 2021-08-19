@@ -11,6 +11,14 @@ result 변수와, card1/card2 의 변수들을 long long int로 하지 않아
 카드를 합체하는 방식으로 진행했다.
 
 
+------ 재풀이 (조금의 시간복잡도 개선 [그래봐야 1000번의 연산])
+
+- 마지막에 우선순위 큐에 들어간 요소들을 다 더하는 것 대신
+- 처음의 입력을 result에 전부 더한 후,
+- 카드를 합체하는 과정에서 생긴 card1 + card2의 합 또한
+- result에 더해, 추가적인 연산을 줄였다.
+
+
 시작시간 1:26
 종료시간 1:43     걸린시간 : 17분  ||  시도횟수 : 2회
 */
@@ -25,8 +33,7 @@ using namespace std;
 using LL = long long int;
 using PQ = priority_queue<long long int, vector<long long int>, greater<long long int>>;
 
-void solve(PQ& pq, int n, int m);
-void cardFusion(PQ& pq, int m);
+void cardFusion(PQ& pq, int m, LL result);
 int main(void)
 {
     cin.tie(0);
@@ -34,6 +41,7 @@ int main(void)
     cout.tie(0);
 
 
+    LL result = 0;
     int n, m, temp;
     cin >> n >> m;
 
@@ -41,32 +49,20 @@ int main(void)
     for (int i = 0; i < n; i++)
     {
         cin >> temp;
+
+        result += temp;
         pq.push(temp);
     }
 
 
-    solve(pq, n, m);
+    cardFusion(pq, m, result);
     return 0;
 }
 
 
-void solve(PQ& pq, int n, int m)
+void cardFusion(PQ& pq, int m, LL result)
 {
-    cardFusion(pq, m);
-
-    LL result = 0;
-    while(!pq.empty())
-    {
-        result += pq.top();
-        pq.pop();
-    }
-
-    cout << result;
-}
-
-void cardFusion(PQ& pq, int m)
-{
-    LL card1, card2;
+    LL card1, card2, sum;
     for (int i = 0; i < m; i++)
     {
         card1 = pq.top();
@@ -75,7 +71,12 @@ void cardFusion(PQ& pq, int m)
         card2 = pq.top();
         pq.pop();
 
-        pq.push(card1 + card2);
-        pq.push(card1 + card2);
+        sum = card1 + card2;
+
+        result += sum;
+        pq.push(sum);
+        pq.push(sum);
     }
+
+    cout << result;
 }
