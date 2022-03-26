@@ -6,125 +6,92 @@ https://www.acmicpc.net/problem/2615
 
 
 ==============================
-단순히 위에서부터 아래로, 왼쪽에서부터 오른쪽으로 차례대로 탐색하면 쉽게 풀릴 줄 알았으나,
+-재시도- 
 
-오른쪽 대각선 위로 향하는 방향에 대해서 문제가 발생하여
-2번이나 틀리게 되었다.
-
-그리고 not_win을 따로 생각해야 된다는 점이 좀 골치아팠다.
-==============================
+방문 처리 실수로 1번 틀렸으나,
+전체적으로 코드를 깔끔하게 작성하도록 노력하면서 함
+=============================함
 
 
-시작시간 : 04:55
-종료시간 : 05:35       [시도횟수 : 3회  |  걸린시간 : 40분]
+시작시간 : **:**
+종료시간 : **:**       [시도횟수 : 2회  |  걸린시간 : ??분]
 */
+
 
 #include <iostream>
 #define MAX 19
-#define MAX_DIR 3
 
 using namespace std;
 
 int board[MAX][MAX];
-int dy[MAX_DIR + 1] = { 1, 0, 1, -1 };
-int dx[MAX_DIR + 1] = { 0, 1, 1, 1 };
 
-bool not_win[MAX][MAX][MAX_DIR + 1] = { 0, };
+int cols[MAX][10], rows[MAX][10];
+int square[3][3][10];
 
-int DFS(int depth, int ny, int nx, int dir, int color) {
+int dy[] = { 0, 1, 1, 1};
+int dx[] = { 1, 0, 1, -1};
 
-	if (ny < 0 || ny >= MAX || nx < 0 || nx >= MAX || board[ny][nx] != color) {
-		return depth;
+bool v[MAX][MAX][4] = { 0, };
+
+bool find_omok(int y, int x, int color, int dir, int depth) {
+	if (v[y][x][dir]) {
+		return false;
 	}
 
-	if (board[ny][nx] == color) {
-		int cnt = DFS(depth + 1, ny + dy[dir], nx + dx[dir], dir, color);
-		if (cnt == 5) {
-			return cnt;
-		}
-		else {
-			not_win[ny][nx][dir] = true;
-			return cnt;
-		}
+	int ny = y + dy[dir];
+	int nx = x + dx[dir];
+	if (board[nx][ny] != color) {
+		return depth == 5 ? true : false;
 	}
 
-	return depth;
+	return v[y][x][dir] = find_omok(ny, nx, color, dir, depth + 1);
 }
 
-int main() {
-	for (auto& y : board) {
-		for (auto& x : y) {
-			cin >> x;
-		}
-	}
+pair<pair<int, int>, int> solve() {
+	bool is_true = false;
 
-
-	// solve(); 
-	int win = 0;
-	int win_y, win_x;
 	for (int y = 0; y < MAX; y++) {
 		for (int x = 0; x < MAX; x++) {
-			for (int dir = 0; dir < MAX_DIR; dir++) {
-				int color = board[y][x];
-
-				if (not_win[y][x][dir] == true) {
-					continue;
+			for (int dir = 0; dir < 4; dir++) {
+				if (board[y][x] != 0) {
+					if (find_omok(y, x, board[y][x], dir, 0)) {
+						if (dir != 4) {
+							return {{ y + 1, x + 1 }, board[y][x] };
+						}
+						else {
+							return {{ y - 3, x - 3 }, board[y][x] };
+						}
+					}
 				}
-
-				if (color == 0) {
-					break;
-				}
-
-				if (DFS(1, y + dy[dir], x + dx[dir], dir, color) == 5) {
-					win = color;
-					win_y = y + 1;
-					win_x = x + 1;
-					break;
-				}
-				else {
-					not_win[y][x][dir] = true;
-				}
-			}
-
-			if (win) {
-				break;
-			}
-		}
-
-		if (win) {
-			break;
-		}
-	}
-
-	if (!win) {
-		for (int y = MAX - 1; y >= 0; y--) {
-			for (int x = MAX - 1; x >= 0; x--) {
-				int color = board[y][x];
-
-				if (not_win[y][x][3] == true || color == 0) {
-					continue;
-				}
-
-				if (DFS(1, y + dy[3], x + dx[3], 3, color) == 5) {
-					win = color;
-					win_y = y + 1;
-					win_x = x + 1;
-				}
-				else {
-					not_win[y][x][3] = true;
-				}
-			}
-
-			if (win) {
-				break;
 			}
 		}
 	}
 
+	return {{ 0, 0 }, 0 };
+}
 
-	cout << win << "\n";
-	if (win) {
-		cout << win_y << " " << win_x;
+int main() {;
+	for (int y = 0; y < MAX; y++) {
+		for (int x = 0; x < MAX; x++) {
+			cin >> board[y][x];	
+
+			if (auto i = board[y][x]) {
+				rows[y][i] = true; 
+				cols[x][i] = true;
+
+				square[y / 3][x / 3][i] = true;
+			}
+		}
+	} 
+
+	pair<pair<int, int>, int> result = solve();
+	if (result.second == 0) {
+		cout << "0";
 	}
+	else {
+		cout << result.second << "\n";
+		cout << result.first.first << " " << result.first.second;
+	}
+
 	return 0;
 }
