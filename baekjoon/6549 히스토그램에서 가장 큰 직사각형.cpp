@@ -14,77 +14,72 @@ https://www.acmicpc.net/problem/6549
 #include <algorithm>
 #include <iostream>
 #include <vector>
-#include <cmath>
-#include <climits>
 
 using namespace std;
+using lld = long long;
 
-long long n;
-long long max_area;
-vector<pair<long long, long long>> seg;
+vector<int> seg;
+lld max_area;
 
-// minV, min_index;
-pair<long long, long long> init(vector<long long>& height, long long node, long long left, long long right) {
+int init(vector<lld>& arr, int node, int left, int right) {
 	if (left == right) {
-		seg[node].second = left;
-		seg[node].first = height[left];
+		return seg[node] = left;
+	}
+
+	int mid = (left + right) / 2;
+	int l_idx = init(arr, node * 2, left, mid);
+	int r_idx = init(arr, node * 2 + 1, mid + 1, right);
+
+	return seg[node] = arr[l_idx] < arr[r_idx] ? l_idx : r_idx;
+}
+
+int query(vector<lld>& arr, int node, int left, int right, int start, int end) {
+	if (right < start || left > end) {
+		return -1;
+	}
+
+	if (start <= left && right <= end) {
 		return seg[node];
 	}
 
-	long long mid = (left + right) / 2;
+	int mid = (left + right) / 2;
 
-	return seg[node] = min(init(height, node * 2, left, mid),
-		init(height, node * 2 + 1, mid + 1, right));
+	int l_idx = query(arr, node * 2, left, mid, start, end);
+	int r_idx = query(arr, node * 2 + 1, mid + 1, right, start, end);
+
+	if (l_idx == -1) return r_idx;
+	else if (r_idx == -1) return l_idx;
+	return arr[l_idx] < arr[r_idx] ? l_idx : r_idx;
 }
 
-// first : minV;
-// second : min_index;
-pair<long long, long long> query(long long node, long long start, long long end, long long find_left, long long find_right) {
-	if (find_right < start || end < find_left) {
-		return { LLONG_MAX, LLONG_MAX };
-	}
-
-	if (find_left <= start && end <= find_right) {
-		return { seg[node].first, seg[node].second };
-	}
-
-	long long mid = (start + end) / 2;
-	pair<long long, long long> minV = min(query(node * 2, start, mid, find_left, find_right), query(node * 2 + 1, mid + 1, end, find_left, find_right));
-
-	return minV;
-}
-
-void loop(long long left, long long right) {
+void div_loop(vector<lld>& arr, int left, int right) {
 	if (left <= right) {
-		pair<long long, long long> tmp = query(1, 0, n - 1, left, right);
-		long long cut_mid = tmp.second;
-
-		if (tmp.first != LLONG_MAX) {
-			max_area = max(max_area, tmp.first * (right - left + 1));
-		}
-
-		if (left != right) {
-			loop(left, cut_mid - 1);
-			loop(cut_mid + 1, right);
-		}
+		int cut_idx = query(arr, 1, 0, arr.size() - 1, left, right);
+		max_area = max(max_area, arr[cut_idx] * (right - left + 1));
+		
+		div_loop(arr, left, cut_idx - 1);
+		div_loop(arr, cut_idx + 1, right);
 	}
 }
 
 int main() {
-	while ((cin >> n) && n != 0) {
-		vector<long long> height(n);
+	int n;
 
-		for (auto& i : height) {
+	while (cin >> n && n != 0) {
+		vector<lld> arr(n);
+		for (auto& i : arr) {
 			cin >> i;
 		}
 
-		seg.assign(n * 4, { 0, 0 });
-		init(height, 1, 0, n - 1);
+		seg.assign(n * 4, 0);
 
-		max_area = LLONG_MIN;
-		loop(0, n - 1);
+		max_area = 0;
+
+		init(arr, 1, 0, n - 1);
+		div_loop(arr, 0, n - 1);
 
 		cout << max_area << "\n";
 	}
+
 	return 0;
 }
