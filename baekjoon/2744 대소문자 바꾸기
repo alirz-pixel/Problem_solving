@@ -1,0 +1,22 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main() {
+	string word;
+	cin >> word;
+
+	for (auto& alpha : word) {
+		if (isupper(alpha)) {
+			alpha = tolower(alpha);
+		}
+		else {
+			alpha = toupper(alpha);
+		}
+	}
+
+	cout << word;
+
+	return 0;
+}
