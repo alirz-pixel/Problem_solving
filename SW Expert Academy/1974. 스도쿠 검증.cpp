@@ -23,6 +23,30 @@ bool is_sudoku_block(vector<vector<int>>& board) {
 	return true;
 }
 
+bool is_sudoku_ho_and_ver(vector<vector<int>>& board, bool horizontal, int idx) {
+	vector<bool> visit_num(10); // 1 ~ 9;
+	for (int repeat = 0; repeat < 9; repeat++) {
+		if (horizontal) { // 가로 검증
+			int cur = board[idx][repeat];
+
+			if (visit_num[cur]) {
+				return false;
+			}
+			visit_num[cur] = true;
+		}
+		else { // 세로 검증
+			int cur = board[repeat][idx];
+
+			if (visit_num[cur]) {
+				return false;
+			}
+			visit_num[cur] = true;
+		}
+	}
+
+	return true;
+}
+
 int main() {
 	int t;
 	cin >> t;
@@ -39,35 +63,17 @@ int main() {
 
 		// 세로 검사
 		for (int x = 0; x < 9; x++) {
-			vector<bool> visit_num(10); // 1 ~ 9;
-
-			for (int y = 0; y < 9; y++) {
-				if (visit_num[board[y][x]]) {
-					is_sudoku = false;
-					break;
-				}
-
-				visit_num[board[y][x]] = true;
-			}
+			is_sudoku = is_sudoku_ho_and_ver(board, false, x);
 
 			if (!is_sudoku) {
 				break;
 			}
 		}
-			 
+
 		// 가로 검사
 		if (is_sudoku) {
 			for (int y = 0; y < 9; y++) {
-				vector<bool> visit_num(10); // 1 ~ 9;
-
-				for (int x = 0; x < 9; x++) {
-					if (visit_num[board[y][x]]) {
-						is_sudoku = false;
-						break;
-					}
-
-					visit_num[board[y][x]] = true;
-				}
+				is_sudoku = is_sudoku_ho_and_ver(board, true, y);
 
 				if (!is_sudoku) {
 					break;
