@@ -13,8 +13,17 @@ int main() {
 		int dummy_tc;
 		cin >> dummy_tc;
 
+
+		int minV = INT_MAX;
 		for (auto &i : arr) {
 			cin >> i;
+
+			minV = min(minV, i);
+		}
+		
+		int minus_value = (minV - 1) / 15 * 15;
+		for (auto& i : arr) {
+			i -= minus_value;
 		}
 
 		int head_idx = 0;
