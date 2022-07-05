@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <queue>
 
 using namespace std;
 
@@ -7,21 +8,31 @@ vector<vector<int>> tree;
 vector<bool> visited;
 int ans = 0;
 
-void dfs(int root, int depth) {
-	visited[root] = true;
-	bool is_child_node = true;
+void bfs() {
+	queue<pair<int, int>> q;
+	pair<int, int> front;
 
-	for (auto i : tree[root]) {
-		if (visited[i]) {
-			continue;
+	visited[0] = true;
+	q.push({ 0, 0 });
+
+	while (!q.empty()) {
+		front = q.front();
+		q.pop();
+
+		bool is_child_node = true;
+		for (auto i : tree[front.first]) {
+			if (visited[i]) {
+				continue;
+			}
+
+			is_child_node = false;
+			visited[i] = true;
+			q.push({ i, front.second + 1 });
 		}
 
-		is_child_node = false;
-		dfs(i, depth + 1);
-	}
-
-	if (is_child_node) {
-		ans += depth;
+		if (is_child_node) {
+			ans += front.second;
+		}
 	}
 }
 
@@ -41,8 +52,8 @@ int main() {
 		tree[b].push_back(a);
 	}
 
-	dfs(0, 0);
-	cout << ((ans % 2 == 1) ? "Yes" : "No");
+	bfs();
+	cout << ((ans % 2) ? "Yes" : "No");
 
 	return 0;
 }
